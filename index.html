@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>ELİFİM</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@600&display=swap" rel="stylesheet">
+
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{
+height:100vh;
+overflow:hidden;
+font-family:'Dancing Script',cursive;
+background:black;
+color:white;
+}
+
+/* ---------------- ŞİFRE ---------------- */
+#lock{
+position:fixed;inset:0;z-index:100;
+background:linear-gradient(180deg,#ffb3c6,#ffd6e5);
+display:flex;flex-direction:column;
+align-items:center;justify-content:center;
+gap:14px;color:#7a0031;
+}
+#code{font-size:36px;letter-spacing:10px}
+#hint{min-height:24px}
+#hearts{position:absolute;left:20px;font-size:26px}
+.keypad{display:grid;grid-template-columns:repeat(3,70px);gap:12px}
+.key{
+width:70px;height:70px;border-radius:50%;
+background:#ff4d6d;color:white;
+display:flex;align-items:center;justify-content:center;
+font-size:22px;
+}
+
+/* ---------------- ŞİFRE BAŞARISIZ ---------------- */
+#failMsg{
+display:none;position:fixed;inset:0;z-index:90;
+background:black;color:white;
+display:flex;align-items:center;justify-content:center;
+text-align:center;font-size:24px;padding:20px;
+}
+
+/* ---------------- KALP (11 TIK) ---------------- */
+#heartScreen{
+display:none;position:fixed;inset:0;z-index:80;
+background:linear-gradient(180deg,#ffb3c6,#ffd6e5);
+display:flex;align-items:center;justify-content:center;
+}
+#bigHeart{
+font-size:150px;
+cursor:pointer;
+animation:pulse 1.4s infinite;
+}
+@keyframes pulse{50%{transform:scale(1.15)}}
+
+/* ---------------- MEKTUP ---------------- */
+#site{
+display:none;position:fixed;inset:0;z-index:60;
+background:radial-gradient(circle at top,#2b0a3d,#120015);
+display:flex;align-items:flex-end;justify-content:center;
+}
+.envelope{
+width:320px;height:220px;
+background:#f7e7d3;
+border-radius:6px;
+transform:translateY(400px);
+transition:2s;
+position:relative;
+}
+.envelope.show{transform:translateY(0)}
+.envelope::before{
+content:"";
+position:absolute;top:0;left:0;
+border-left:160px solid transparent;
+border-right:160px solid transparent;
+border-top:120px solid #f2d3b1;
+transform-origin:top;
+transition:1.2s;
+}
+.envelope.open::before{transform:rotateX(180deg)}
+.letter{
+position:absolute;
+width:300px;height:430px;
+background:#fffaf3;
+top:10px;left:10px;
+padding:24px;
+opacity:0;
+transition:1.5s;
+display:flex;
+align-items:center;
+justify-content:center;
+text-align:center;
+font-size:22px;
+line-height:1.7;
+color:#3a1c1c;
+}
+.envelope.open .letter{
+opacity:1;
+transform:translateY(-140px);
+}
+.final{color:#e63946;font-size:26px}
+
+/* ---------------- KAR ---------------- */
+canvas{position:fixed;inset:0;pointer-events:none;z-index:20}
+
+/* ---------------- FINAL ---------------- */
+#finalWords{
+position:fixed;
+top:40%;
+left:50%;
+transform:translate(-50%,-50%);
+text-align:center;
+opacity:0;
+transition:2s;
+z-index:40;
+}
+#finalWords .top{
+font-size:42px;
+letter-spacing:4px;
+margin-bottom:14px;
+}
+#finalWords .burn{
+font-size:72px;
+letter-spacing:6px;
+color:#ff1f1f;
+text-shadow:
+0 0 10px #ff1f1f,
+0 0 30px #ff0000,
+0 0 60px #ff0000;
+animation:burn 1.6s infinite;
+}
+@keyframes burn{
+0%{opacity:.6}
+50%{opacity:1;transform:scale(1.08)}
+100%{opacity:.6}
+}
+
+/* ---------------- BUZUL ---------------- */
+#ice{
+position:fixed;inset:0;z-index:35;
+background:radial-gradient(circle at center,
+rgba(255,255,255,.08),
+rgba(255,255,255,.18),
+rgba(255,255,255,.35));
+opacity:0;
+transition:6s;
+pointer-events:none;
+backdrop-filter:blur(2px);
+}
+
+/* ---------------- KALP ÇİZİM ---------------- */
+#drawHeart{
+position:fixed;
+top:55%;
+left:50%;
+transform:translate(-50%,-50%);
+width:320px;height:280px;
+z-index:38;
+display:none;
+}
+#drawHeart path{
+fill:none;
+stroke:white;
+stroke-width:4;
+stroke-dasharray:1200;
+stroke-dashoffset:1200;
+animation:draw 6s linear forwards;
+}
+@keyframes draw{to{stroke-dashoffset:0}}
+
+.freeze *{
+animation-play-state:paused!important;
+pointer-events:none;
+}
+</style>
+</head>
+
+<body>
+
+<!-- ŞİFRE -->
+<div id="lock">
+<div id="hearts"></div>
+<div id="code">____</div>
+<div id="hint"></div>
+<div class="keypad">
+<div class="key" onclick="p(1)">1</div><div class="key" onclick="p(2)">2</div><div class="key" onclick="p(3)">3</div>
+<div class="key" onclick="p(4)">4</div><div class="key" onclick="p(5)">5</div><div class="key" onclick="p(6)">6</div>
+<div class="key" onclick="p(7)">7</div><div class="key" onclick="p(8)">8</div><div class="key" onclick="p(9)">9</div>
+<div class="key" onclick="clr()">⌫</div><div class="key" onclick="p(0)">0</div><div class="key" onclick="chk()"❤️</div>
+</div>
+</div>
+
+<div id="failMsg">
+Sana inanamıyorum…<br>
+İnsan kendi doğum tarihini nasıl bilmez?<br><br>
+Her neyse, bir önemi yok.<br>
+Ben senin için şifreyi hallettim.
+</div>
+
+<!-- KALP -->
+<div id="heartScreen">
+<div id="bigHeart">❤️</div>
+</div>
+
+<!-- MÜZİK -->
+<audio id="music" preload="auto" loop>
+<source src="denizebiraksamkendimi.mp3" type="audio/mpeg">
+</audio>
+
+<!-- MEKTUP -->
+<div id="site">
+<div class="envelope" id="env">
+<div class="letter" id="text"></div>
+</div>
+</div>
+
+<canvas id="snow"></canvas>
+
+<div id="finalWords">
+<div class="top">SENİN İLE SONSUZA DEK</div>
+<div class="burn">ELİFİM</div>
+</div>
+
+<div id="ice"></div>
+
+<svg id="drawHeart" viewBox="0 0 32 29">
+<path d="M23.6,0c-3.4,0-6.4,2.1-7.6,5.1C14.8,2.1,11.8,0,8.4,0
+C3.8,0,0,3.8,0,8.4c0,9.4,16,20.6,16,20.6s16-11.2,16-20.6
+C32,3.8,28.2,0,23.6,0z"/>
+</svg>
+
+<script>
+/* -------- ŞİFRE -------- */
+let input="",wrong=0;
+function p(n){if(input.length<4){input+=n;code.textContent=input.padEnd(4,"_")}}
+function clr(){input="";code.textContent="____"}
+function chk(){
+if(input==="2207"){
+lock.style.display="none";
+heartScreen.style.display="flex";
+}else{
+wrong++;input="";code.textContent="____";
+hearts.textContent="💔".repeat(wrong);
+if(wrong===1)hint.textContent="ipucu: şakayık";
+if(wrong===2)hint.textContent="ipucu: ponny";
+if(wrong===3)hint.textContent="ipucu: kar küresi";
+if(wrong>=4){
+lock.style.display="none";
+failMsg.style.display="flex";
+setTimeout(()=>{
+failMsg.style.display="none";
+heartScreen.style.display="flex";
+},4000);
+}
+}
+}
+
+/* -------- KALP + MÜZİK -------- */
+let clicks=0,started=false;
+bigHeart.onclick=()=>{
+if(!started){
+music.volume=0.85;
+music.play().catch(()=>{});
+started=true;
+}
+clicks++;
+if(clicks>=11){
+heartScreen.style.display="none";
+startLetter();
+}
+};
+
+/* -------- MEKTUP -------- */
+const pages=[
+"Elif’im,<br>Herkes yeni bir yıla girerken<br>ben seninle yeni yıllarıma giriyorum.",
+"Kıvırcık saçlarına,<br>kahverengi gözlerine<br>her geçen gün daha çok bittiğim…",
+"Seni üzdüğüm her an için<br>kalbimle özür diliyorum.",
+"<div class='final'>Seni bir gün değil,<br>bir ömür sevdim.</div>",
+"Seni seviyorum<br>27.04.2025 – ∞"
+];
+let i=0;
+
+function startLetter(){
+site.style.display="flex";
+setTimeout(()=>env.classList.add("show"),300);
+setTimeout(()=>{
+env.classList.add("open");
+showPages();
+},2300);
+}
+
+function showPages(){
+text.innerHTML=pages[0];
+setInterval(()=>{
+i++;
+if(i<pages.length){
+text.style.opacity=0;
+setTimeout(()=>{
+text.innerHTML=pages[i];
+text.style.opacity=1;
+},800);
+}else{
+setTimeout(endFinal,20000);
+}
+},20000);
+}
+
+/* -------- FINAL -------- */
+const c=document.getElementById("snow"),ctx=c.getContext("2d");
+c.width=innerWidth;c.height=innerHeight;
+let flakes=[],run=true;
+function snow(){
+if(!run)return;
+ctx.clearRect(0,0,c.width,c.height);
+flakes.forEach(f=>{
+f.y+=.7;
+ctx.beginPath();
+ctx.arc(f.x,f.y,f.r,0,Math.PI*2);
+ctx.fillStyle="rgba(255,255,255,.9)";
+ctx.fill();
+});
+requestAnimationFrame(snow);
+}
+setInterval(()=>{if(run)flakes.push({x:Math.random()*c.width,y:0,r:Math.random()*2+1})},130);
+snow();
+
+function endFinal(){
+env.style.opacity=0;
+setTimeout(()=>{
+site.style.display="none";
+finalWords.style.opacity=1;
+setTimeout(()=>drawHeart.style.display="block",2500);
+setTimeout(()=>ice.style.opacity=1,7000);
+setTimeout(()=>{
+run=false;
+music.pause();
+document.body.classList.add("freeze");
+},12000);
+},2000);
+}
+</script>
+
+</body>
+</html>
