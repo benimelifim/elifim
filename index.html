@@ -2,345 +2,393 @@
 <html lang="tr">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-<title>ELİFİM</title>
-
+<title>Elifim</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@600&display=swap" rel="stylesheet">
 
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
 body{
-height:100vh;
-overflow:hidden;
-font-family:'Dancing Script',cursive;
 background:black;
+font-family:'Dancing Script',cursive;
+overflow:hidden;
 color:white;
+user-select:none;
 }
 
-/* ---------------- ŞİFRE ---------------- */
+/* SES */
+#volumeBox{
+position:fixed;
+bottom:20px;left:20px;
+z-index:2000;
+}
+
+/* ORTA MESAJ */
+#messageScreen{
+display:none;
+position:fixed;
+inset:0;
+background:black;
+z-index:1900;
+align-items:center;
+justify-content:center;
+}
+.messageBox{
+max-width:520px;
+padding:30px;
+text-align:center;
+font-size:26px;
+line-height:1.6;
+}
+
+/* ŞİFRE */
 #lock{
-position:fixed;inset:0;z-index:100;
+position:fixed;
+inset:0;
 background:linear-gradient(180deg,#ffb3c6,#ffd6e5);
-display:flex;flex-direction:column;
-align-items:center;justify-content:center;
-gap:14px;color:#7a0031;
+display:flex;
+flex-direction:column;
+align-items:center;
+justify-content:center;
+z-index:1800;
+color:#7a0031;
 }
 #code{font-size:36px;letter-spacing:10px}
-#hint{min-height:24px}
-#hearts{position:absolute;left:20px;font-size:26px}
-.keypad{display:grid;grid-template-columns:repeat(3,70px);gap:12px}
+#hint{margin-top:14px;min-height:40px}
+#brokenHearts{
+position:absolute;top:20px;left:20px;
+font-size:26px;
+}
+.keypad{
+display:grid;
+grid-template-columns:repeat(3,70px);
+gap:12px;
+margin-top:20px;
+}
 .key{
-width:70px;height:70px;border-radius:50%;
-background:#ff4d6d;color:white;
-display:flex;align-items:center;justify-content:center;
+width:70px;height:70px;
+border-radius:50%;
+background:#ff4d6d;
+color:white;
+display:flex;
+align-items:center;
+justify-content:center;
 font-size:22px;
+cursor:pointer;
 }
 
-/* ---------------- ŞİFRE BAŞARISIZ ---------------- */
-#failMsg{
-display:none;position:fixed;inset:0;z-index:90;
-background:black;color:white;
-display:flex;align-items:center;justify-content:center;
-text-align:center;font-size:24px;padding:20px;
-}
-
-/* ---------------- KALP (11 TIK) ---------------- */
+/* KALP */
 #heartScreen{
-display:none;position:fixed;inset:0;z-index:80;
+display:none;
+position:fixed;inset:0;
 background:linear-gradient(180deg,#ffb3c6,#ffd6e5);
-display:flex;align-items:center;justify-content:center;
+display:flex;
+align-items:center;
+justify-content:center;
+z-index:1700;
 }
-#bigHeart{
+#bigHeartBtn{
 font-size:150px;
 cursor:pointer;
 animation:pulse 1.4s infinite;
 }
 @keyframes pulse{50%{transform:scale(1.15)}}
 
-/* ---------------- MEKTUP ---------------- */
-#site{
-display:none;position:fixed;inset:0;z-index:60;
-background:radial-gradient(circle at top,#2b0a3d,#120015);
-display:flex;align-items:flex-end;justify-content:center;
-}
-.envelope{
-width:320px;height:220px;
-background:#f7e7d3;
-border-radius:6px;
-transform:translateY(400px);
-transition:2s;
-position:relative;
-}
-.envelope.show{transform:translateY(0)}
-.envelope::before{
-content:"";
-position:absolute;top:0;left:0;
-border-left:160px solid transparent;
-border-right:160px solid transparent;
-border-top:120px solid #f2d3b1;
-transform-origin:top;
-transition:1.2s;
-}
-.envelope.open::before{transform:rotateX(180deg)}
-.letter{
-position:absolute;
-width:300px;height:430px;
-background:#fffaf3;
-top:10px;left:10px;
-padding:24px;
-opacity:0;
-transition:1.5s;
-display:flex;
-align-items:center;
-justify-content:center;
-text-align:center;
-font-size:22px;
-line-height:1.7;
-color:#3a1c1c;
-}
-.envelope.open .letter{
-opacity:1;
-transform:translateY(-140px);
-}
-.final{color:#e63946;font-size:26px}
-
-/* ---------------- KAR ---------------- */
-canvas{position:fixed;inset:0;pointer-events:none;z-index:20}
-
-/* ---------------- FINAL ---------------- */
-#finalWords{
+/* ZARF */
+#envelopeStage{
+display:none;
 position:fixed;
+inset:0;
+background:#120015;
+display:flex;
+align-items:flex-end;
+justify-content:center;
+z-index:1600;
+}
+#envelope{
+width:320px;height:200px;
+background:#f3e0c6;
+border-radius:6px;
+margin-bottom:60px;
+position:relative;
+animation:rise 2s forwards;
+}
+@keyframes rise{
+from{transform:translateY(400px)}
+to{transform:translateY(0)}
+}
+#envHeart{
+position:absolute;
+top:50%;left:50%;
+transform:translate(-50%,-50%);
+font-size:48px;
+cursor:pointer;
+animation:pulse 1.3s infinite;
+}
+#letter{
+position:absolute;
+bottom:20px;
+left:10px;
+right:10px;
+background:#fffaf3;
+padding:20px;
+display:none;
+font-size:22px;
+color:#3a1c1c;
+border-radius:6px;
+text-align:center;
+}
+
+/* SİNEMA */
+#cinema{
+display:none;
+position:fixed;
+inset:0;
+background:black;
+overflow:hidden;
+z-index:1500;
+}
+
+/* PARÇACIK */
+.particle{
+position:absolute;
+top:-40px;
+font-size:22px;
+animation:fall linear forwards;
+pointer-events:none;
+}
+@keyframes fall{
+to{transform:translateY(110vh)}
+}
+
+/* BUZ */
+#freeze{
+position:absolute;
+inset:0;
+background:rgba(255,255,255,0.25);
+backdrop-filter:blur(3px);
+opacity:0;
+transition:6s;
+z-index:10;
+}
+
+/* YAZILAR */
+#finalText{
+position:absolute;
 top:40%;
 left:50%;
 transform:translate(-50%,-50%);
 text-align:center;
 opacity:0;
-transition:2s;
-z-index:40;
+transition:4s;
+z-index:9;
 }
-#finalWords .top{
-font-size:42px;
-letter-spacing:4px;
-margin-bottom:14px;
-}
-#finalWords .burn{
-font-size:72px;
-letter-spacing:6px;
+#finalText h1{font-size:42px;letter-spacing:4px}
+#finalText h2{
+font-size:70px;
 color:#ff1f1f;
-text-shadow:
-0 0 10px #ff1f1f,
-0 0 30px #ff0000,
-0 0 60px #ff0000;
-animation:burn 1.6s infinite;
+text-shadow:0 0 20px red,0 0 40px crimson;
+animation:burn 1.5s infinite;
 }
-@keyframes burn{
-0%{opacity:.6}
-50%{opacity:1;transform:scale(1.08)}
-100%{opacity:.6}
-}
+#finalText p{font-size:22px}
 
-/* ---------------- BUZUL ---------------- */
-#ice{
-position:fixed;inset:0;z-index:35;
-background:radial-gradient(circle at center,
-rgba(255,255,255,.08),
-rgba(255,255,255,.18),
-rgba(255,255,255,.35));
-opacity:0;
-transition:6s;
-pointer-events:none;
-backdrop-filter:blur(2px);
-}
+@keyframes burn{50%{transform:scale(1.06)}}
 
-/* ---------------- KALP ÇİZİM ---------------- */
-#drawHeart{
-position:fixed;
-top:55%;
+/* DEV KALP – YAZILARI SARAR */
+#finalHeart{
+position:absolute;
+top:50%;
 left:50%;
 transform:translate(-50%,-50%);
-width:320px;height:280px;
-z-index:38;
-display:none;
+width:620px;
+opacity:0;
+z-index:7;
+pointer-events:none;
 }
-#drawHeart path{
+#finalHeart path{
 fill:none;
 stroke:white;
-stroke-width:4;
-stroke-dasharray:1200;
-stroke-dashoffset:1200;
-animation:draw 6s linear forwards;
+stroke-width:2.5;
+stroke-dasharray:1400;
+stroke-dashoffset:1400;
+animation:drawHeart 7s forwards, heartBeat 1.6s infinite 7s;
 }
-@keyframes draw{to{stroke-dashoffset:0}}
 
-.freeze *{
+@keyframes drawHeart{to{stroke-dashoffset:0}}
+@keyframes heartBeat{50%{transform:scale(1.03)}}
+
+.freezeAll *{
 animation-play-state:paused!important;
-pointer-events:none;
 }
 </style>
 </head>
 
 <body>
 
-<!-- ŞİFRE -->
+<div id="volumeBox">
+<input type="range" min="0" max="1" step="0.01" value="0.8"
+oninput="music.volume=this.value">
+</div>
+
+<div id="messageScreen"><div class="messageBox" id="messageBox"></div></div>
+
 <div id="lock">
-<div id="hearts"></div>
+<div id="brokenHearts"></div>
 <div id="code">____</div>
 <div id="hint"></div>
 <div class="keypad">
-<div class="key" onclick="p(1)">1</div><div class="key" onclick="p(2)">2</div><div class="key" onclick="p(3)">3</div>
-<div class="key" onclick="p(4)">4</div><div class="key" onclick="p(5)">5</div><div class="key" onclick="p(6)">6</div>
-<div class="key" onclick="p(7)">7</div><div class="key" onclick="p(8)">8</div><div class="key" onclick="p(9)">9</div>
-<div class="key" onclick="clr()">⌫</div><div class="key" onclick="p(0)">0</div><div class="key" onclick="chk()">❤️</div>
+<div class="key" onclick="p(1)">1</div>
+<div class="key" onclick="p(2)">2</div>
+<div class="key" onclick="p(3)">3</div>
+<div class="key" onclick="p(4)">4</div>
+<div class="key" onclick="p(5)">5</div>
+<div class="key" onclick="p(6)">6</div>
+<div class="key" onclick="p(7)">7</div>
+<div class="key" onclick="p(8)">8</div>
+<div class="key" onclick="p(9)">9</div>
+<div class="key" onclick="clr()">⌫</div>
+<div class="key" onclick="p(0)">0</div>
+<div class="key" onclick="chk()">❤️</div>
 </div>
 </div>
 
-<div id="failMsg">
-Sana inanamıyorum…<br>
-İnsan kendi doğum tarihini nasıl bilmez?<br><br>
-Her neyse, bir önemi yok.<br>
-Ben senin için şifreyi hallettim.
-</div>
+<div id="heartScreen"><div id="bigHeartBtn">❤️</div></div>
 
-<!-- KALP -->
-<div id="heartScreen">
-<div id="bigHeart">❤️</div>
-</div>
-
-<!-- MÜZİK -->
-<audio id="music" preload="auto" loop>
-<source src="denizebiraksamkendimi.mp3" type="audio/mpeg">
-</audio>
-
-<!-- MEKTUP -->
-<div id="site">
-<div class="envelope" id="env">
-<div class="letter" id="text"></div>
+<div id="envelopeStage">
+<div id="envelope">
+<div id="envHeart">❤️</div>
+<div id="letter"></div>
 </div>
 </div>
 
-<canvas id="snow"></canvas>
+<div id="cinema">
 
-<div id="finalWords">
-<div class="top">SENİN İLE SONSUZA DEK</div>
-<div class="burn">ELİFİM</div>
+<div id="finalText">
+<h1>SENİN İLE SONSUZA DEK</h1>
+<h2>ELİFİM</h2>
+<p>27.04.2025 – ∞</p>
 </div>
 
-<div id="ice"></div>
-
-<svg id="drawHeart" viewBox="0 0 32 29">
-<path d="M23.6,0c-3.4,0-6.4,2.1-7.6,5.1C14.8,2.1,11.8,0,8.4,0
-C3.8,0,0,3.8,0,8.4c0,9.4,16,20.6,16,20.6s16-11.2,16-20.6
+<svg id="finalHeart" viewBox="0 0 32 29">
+<path d="M23.6,0c-3.4,0-6.4,2.1-7.6,5.1
+C14.8,2.1,11.8,0,8.4,0
+C3.8,0,0,3.8,0,8.4
+c0,9.4,16,20.6,16,20.6
+s16-11.2,16-20.6
 C32,3.8,28.2,0,23.6,0z"/>
 </svg>
 
+<div id="freeze"></div>
+</div>
+
+<audio id="music" loop>
+<source src="denizebiraksamkendimi.mp3" type="audio/mpeg">
+</audio>
+
 <script>
-/* -------- ŞİFRE -------- */
-let input="",wrong=0;
-function p(n){if(input.length<4){input+=n;code.textContent=input.padEnd(4,"_")}}
-function clr(){input="";code.textContent="____"}
-function chk(){
-if(input==="2207"){
-lock.style.display="none";
-heartScreen.style.display="flex";
-}else{
-wrong++;input="";code.textContent="____";
-hearts.textContent="💔".repeat(wrong);
-if(wrong===1)hint.textContent="ipucu: şakayık";
-if(wrong===2)hint.textContent="ipucu: ponny";
-if(wrong===3)hint.textContent="ipucu: kar küresi";
-if(wrong>=4){
-lock.style.display="none";
-failMsg.style.display="flex";
+const correct="2207";
+let input="", wrong=0;
+
+function p(n){
+if(input.length<4){
+input+=n;
+code.textContent=input.padEnd(4,"_");
+}}
+function clr(){input="";code.textContent="____";}
+
+function showMessage(html,next){
+messageBox.innerHTML=html;
+messageScreen.style.display="flex";
 setTimeout(()=>{
-failMsg.style.display="none";
-heartScreen.style.display="flex";
-},4000);
+messageScreen.style.display="none";
+if(next)next();
+},3000);
+}
+
+function chk(){
+if(input===correct){
+lock.style.display="none";
+showMessage("Tebrikler aşkım 💗<br>Şifreyi buldun",()=>heartScreen.style.display="flex");
+}else{
+wrong++;
+input="";code.textContent="____";
+brokenHearts.textContent="💔".repeat(wrong);
+if(wrong===1)hint.textContent="Aklına bir çiçek gelsin…";
+else if(wrong===2)hint.textContent="Minik bir at… masallardan çıkmış gibi...";
+else if(wrong===3)hint.textContent="Camın içinde dönen anılar…";
+else{
+lock.style.display="none";
+showMessage(
+"AŞKIM Sana inanamıyorum…<br><br>İnsan kendi doğum tarihini nasıl bilmez?<br><br>Her neyse, bir önemi yok.<br>Ben senin için şifreyi hallettim.",
+()=>heartScreen.style.display="flex");
 }
 }
 }
 
-/* -------- KALP + MÜZİK -------- */
-let clicks=0,started=false;
-bigHeart.onclick=()=>{
-if(!started){
-music.volume=0.85;
+let clicks=0;
+bigHeartBtn.onclick=()=>{
 music.play().catch(()=>{});
-started=true;
-}
 clicks++;
 if(clicks>=11){
 heartScreen.style.display="none";
-startLetter();
+envelopeStage.style.display="flex";
 }
 };
 
-/* -------- MEKTUP -------- */
 const pages=[
-"Elif’im,<br>Herkes yeni bir yıla girerken<br>ben seninle yeni yıllarıma giriyorum.",
-"Kıvırcık saçlarına,<br>kahverengi gözlerine<br>her geçen gün daha çok bittiğim…",
-"Seni üzdüğüm her an için<br>kalbimle özür diliyorum.",
-"<div class='final'>Seni bir gün değil,<br>bir ömür sevdim.</div>",
-"Seni seviyorum<br>27.04.2025 – ∞"
+"Elif’im…<br><br>Bu satırlar sana ulaşırken<br>kalbim çoktan senin adını fısıldıyor.",
+"Hayat bana birçok yol gösterdi ama<br>ben her seferinde sana çıkan yolu seçtim.",
+"Gözlerine her baktığımda<br>dünyanın gürültüsü susuyor.",
+"Belki kusurluyum…<br>Ama seni sevmekte<br>hiçbir zaman eksik olmadım.",
+"Seni çok seviyorum…<br>Ve bu sevgi<br>zamana yenilmeyecek."
 ];
-let i=0;
+let idx=0;
 
-function startLetter(){
-site.style.display="flex";
-setTimeout(()=>env.classList.add("show"),300);
-setTimeout(()=>{
-env.classList.add("open");
-showPages();
-},2300);
-}
-
-function showPages(){
-text.innerHTML=pages[0];
-setInterval(()=>{
-i++;
-if(i<pages.length){
-text.style.opacity=0;
-setTimeout(()=>{
-text.innerHTML=pages[i];
-text.style.opacity=1;
-},800);
+envHeart.onclick=()=>{
+envHeart.style.display="none";
+letter.style.display="block";
+letter.innerHTML=pages[0];
+const pageTimer=setInterval(()=>{
+idx++;
+if(idx<pages.length){
+letter.innerHTML=pages[idx];
 }else{
-setTimeout(endFinal,20000);
+clearInterval(pageTimer);
+envelopeStage.style.display="none";
+startCinema();
 }
-},20000);
+},5000);
+};
+
+function startCinema(){
+cinema.style.display="block";
+let speed=0.3;
+
+setInterval(()=>spawn("❄️",speed),400);
+setTimeout(()=>speed=0.6,8000);
+setTimeout(()=>speed=1,16000);
+
+setTimeout(()=>{
+setInterval(()=>{
+["💗","💜","❤️","💋"].forEach(i=>spawn(i,1.3));
+},600);
+},16000);
+
+setTimeout(()=>freeze.style.opacity=1,22000);
+setTimeout(()=>finalText.style.opacity=1,26000);
+setTimeout(()=>finalHeart.style.opacity=1,34000);
+setTimeout(()=>cinema.classList.add("freezeAll"),40000);
 }
 
-/* -------- FINAL -------- */
-const c=document.getElementById("snow"),ctx=c.getContext("2d");
-c.width=innerWidth;c.height=innerHeight;
-let flakes=[],run=true;
-function snow(){
-if(!run)return;
-ctx.clearRect(0,0,c.width,c.height);
-flakes.forEach(f=>{
-f.y+=.7;
-ctx.beginPath();
-ctx.arc(f.x,f.y,f.r,0,Math.PI*2);
-ctx.fillStyle="rgba(255,255,255,.9)";
-ctx.fill();
-});
-requestAnimationFrame(snow);
-}
-setInterval(()=>{if(run)flakes.push({x:Math.random()*c.width,y:0,r:Math.random()*2+1})},130);
-snow();
-
-function endFinal(){
-env.style.opacity=0;
-setTimeout(()=>{
-site.style.display="none";
-finalWords.style.opacity=1;
-setTimeout(()=>drawHeart.style.display="block",2500);
-setTimeout(()=>ice.style.opacity=1,7000);
-setTimeout(()=>{
-run=false;
-music.pause();
-document.body.classList.add("freeze");
-},12000);
-},2000);
+function spawn(char,s){
+const p=document.createElement("div");
+p.className="particle";
+p.textContent=char;
+p.style.left=Math.random()*100+"vw";
+p.style.fontSize=(Math.random()*18+14)+"px";
+p.style.animationDuration=(6/s+Math.random()*2)+"s";
+cinema.appendChild(p);
+setTimeout(()=>p.remove(),9000);
 }
 </script>
 
